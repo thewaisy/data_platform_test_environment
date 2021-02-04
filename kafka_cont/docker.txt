@@ -1,0 +1,1 @@
+docker run -itd --name kc -v ~/Desktop/git/data_platform/kafka_cont:/home/kafka ubuntu:18.04
