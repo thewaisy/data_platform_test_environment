@@ -1,0 +1,98 @@
+version: "3.7"
+networks:
+  data:
+    external:
+      name: waisy
+
+#  spark-network:
+#    driver: bridge
+#    ipam:
+#      driver: default
+#      config:
+#        - subnet: 10.5.0.0/24
+
+volumes:
+  shared-workspace:
+    name: "hadoop-distributed-file-system"
+    driver: local
+services:
+  zeppelin:
+    build:
+      context: .
+      dockerfile: zeppelin.Dockerfile
+    restart: always
+    container_name: zeppelin
+    networks:
+      - data
+    ports:
+      - 8889:8889
+    volumes:
+      - shared-workspace:/opt/workspace
+
+  jupyterlab:
+    build:
+      context: .
+      dockerfile: jupyterlab.Dockerfile
+    restart: always
+    container_name: jupyterlab
+    networks:
+      - data
+    ports:
+      - 8888:8888
+    volumes:
+      - shared-workspace:/opt/workspace
+
+  spark-master:
+    build:
+      context: .
+      dockerfile: spark-master.Dockerfile
+    restart: always
+    container_name: spark-master
+    hostname: spark-master
+    ports:
+      - 8080:8080
+      - 7077:7077
+    networks:
+      - data
+    volumes:
+      - shared-workspace:/opt/workspace
+    environment:
+      - SPARK_LOCAL_IP=spark-master
+
+  spark-worker-1:
+    build:
+      context: .
+      dockerfile: spark-worker.Dockerfile
+    restart: always
+    container_name: spark-worker-1
+    hostname: spark-worker-1
+    env_file: .env
+    environment:
+      - SPARK_LOCAL_IP=spark-worker-1
+    ports:
+      - 8081:8081
+    networks:
+      - data
+    volumes:
+      - shared-workspace:/opt/workspace
+    depends_on:
+      - spark-master
+
+  spark-worker-2:
+    build:
+      context: .
+      dockerfile: spark-worker.Dockerfile
+    restart: always
+    container_name: spark-worker-2
+    hostname: spark-worker-2
+    env_file: .env
+    environment:
+      - SPARK_LOCAL_IP=spark-worker-2
+    ports:
+      - 8082:8081
+    networks:
+      - data
+    volumes:
+      - shared-workspace:/opt/workspace
+    depends_on:
+      - spark-master

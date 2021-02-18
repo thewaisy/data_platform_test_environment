@@ -29,10 +29,12 @@ sql = f"""
     """
 cursor.execute(sql)
 result = cursor.fetchall()
-
 data = {'str' : 'result'}
-producer.send('best_seller', value=result[0])
-producer.flush()
+if len(result):
+    print(result[0])
+    producer.send('best_seller', value=result[0])
+    # producer.send('book', value=data)
+    producer.flush()
 
 print("elapsed :", time.time() - start)
 
