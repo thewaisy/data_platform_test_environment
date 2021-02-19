@@ -1,0 +1,61 @@
+version: '3.8'
+networks:
+  data:
+    external:
+      name: waisy
+
+x-redash-service: &redash-service
+  image: redash/redash:8.0.0.b32245
+#  depends_on:
+#    - redis
+  env_file: env
+  restart: always
+  networks:
+    - data
+  deploy:
+    resources:
+      limits:
+        cpus: '0.90'
+        memory: 6G
+      reservations:
+        cpus: '0.20'
+        memory: 0.2G
+    restart_policy:
+      condition: on-failure
+
+services:
+  server:
+    <<: *redash-service
+    command: server
+    ports:
+      - "5000:5000"
+    environment:
+      REDASH_WEB_WORKERS: 4
+  scheduler:
+    <<: *redash-service
+    command: scheduler
+    environment:
+      QUEUES: "celery"
+      WORKERS_COUNT: 1
+  scheduled_worker:
+    <<: *redash-service
+    command: worker
+    environment:
+      QUEUES: "scheduled_queries,schemas"
+      WORKERS_COUNT: 1
+  adhoc_worker:
+    <<: *redash-service
+    command: worker
+    environment:
+      QUEUES: "queries"
+      WORKERS_COUNT: 1
+
+  nginx:
+    image: redash/nginx:latest
+    ports:
+      - "80:80"
+    depends_on:
+      - server
+    links:
+      - server:redash
+    restart: always
