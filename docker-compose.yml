@@ -122,10 +122,12 @@ services:
     networks:
       - data
     volumes:
+      - /var/run/docker.sock:/var/run/docker.sock
       - ./db/postgres_12:/var/lib/postgresql/data
     restart: always
     environment:
       POSTGRES_PASSWORD: "donghyun"
+      TZ: Asia/Seoul
 
   es:
     container_name: elasticsearch
@@ -152,14 +154,14 @@ services:
 #      - ./logstash/config/logstash.yml:/usr/share/logstash/config/logstash.yml
 #    depends_on:
 #      - kafka
-#
-#  kibana:
-#    container_name: kibana
-#    image: kibana:7.3.2
-#    ports:
-#      - "5601:5601"
-#    networks:
-#      - data
+
+  kibana:
+    container_name: kibana
+    image: kibana:7.3.2
+    ports:
+      - "5601:5601"
+    networks:
+      - data
 
   redis:
     container_name: redis

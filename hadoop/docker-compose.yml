@@ -1,0 +1,33 @@
+version: "3.7"
+networks:
+  data:
+    external:
+      name: waisy
+
+services:
+  namenode:
+    image: hanyoon1108/hadoop-namenode:3.2.2
+    container_name: namenode
+    hostname: namenode
+    restart: always
+    ports:
+      - 9870:9870
+      - 9000:9000
+    networks:
+      - data
+    volumes:
+      - ../db/hadoop/name:/hadoop/dfs/name
+
+  datanode01:
+    image: hanyoon1108/hadoop-datanode:3.2.2
+    container_name: datanode01
+    hostname: datanode01
+    volumes:
+      - ../db/hadoop/data:/opt/hadoop/dfs/data
+
+#  datanode02:
+#    image: hanyoon1108/hadoop-datanode:3.2.2
+#    container_name: datanode02
+#    hostname: datanode02
+#    volumes:
+#      - ../db/hadoop/data:/opt/hadoop/dfs/data

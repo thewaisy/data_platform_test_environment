@@ -11,6 +11,7 @@ services:
     image: hanyoon/spark-master:3.0.1
     restart: always
     ports:
+      - "4040:4040"
       - "9090:8080"
       - "7077:7077"
     networks:

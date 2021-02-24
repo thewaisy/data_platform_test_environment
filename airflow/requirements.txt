@@ -1,0 +1,6 @@
+# pip install -r requirements.txt
+# https://airflow.apache.org/docs/1.10.12/installation.html#getting-airflow
+
+cython
+wheel
+cryptography

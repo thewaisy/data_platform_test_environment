@@ -1,0 +1,155 @@
+version: '3.8'
+networks:
+  data:
+    external:
+      name: waisy
+
+services:
+  # airflow-webserver
+  airflow-webserver:
+    image: apache/airflow:1.10.12-python3.8
+    container_name: airflow-webserver
+    hostname: airflow-webserver
+#    build: ./docker
+    env_file:
+      - env
+    volumes:
+      - ./dags:/opt/airflow/dags
+      - ./logs:/opt/airflow/logs
+      - ./files:/opt/airflow/files
+      - /var/run/docker.sock:/var/run/docker.sock
+    networks:
+      - data
+    ports:
+      - 50080:80
+      - 58080:8080
+    command:
+      - webserver
+    depends_on:
+      - airflow-initdb
+#      - redis
+#      - postgres
+    privileged: true
+    restart: always
+
+  # airflow-flower
+  airflow-flower:
+    image: apache/airflow:1.10.12-python3.8
+    container_name: airflow-flower
+    hostname: airflow-flower
+#    build: ./docker
+    env_file:
+      - env
+    volumes:
+      - ./logs:/opt/airflow/logs
+    networks:
+      - data
+    ports:
+      - 5555:5555
+    command:
+      - flower
+    restart: always
+
+  # airflow-scheduler
+  airflow-scheduler:
+    image: apache/airflow:1.10.12-python3.8
+    container_name: airflow-scheduler
+    hostname: airflow-scheduler
+#    build: ./docker
+    env_file:
+      - env
+    volumes:
+      - ./dags:/opt/airflow/dags
+      - ./logs:/opt/airflow/logs
+      - ./files:/opt/airflow/files
+      - /var/run/docker.sock:/var/run/docker.sock
+    networks:
+      - data
+    command:
+      - scheduler
+    restart: always
+
+  # airflow-worker
+  airflow-worker:
+    image: apache/airflow:1.10.12-python3.8
+    container_name: airflow-worker
+    hostname: airflow-worker
+#    build: ./docker
+    env_file:
+      - env
+    networks:
+      - data
+    volumes:
+      - ./dags:/opt/airflow/dags
+      - ./logs:/opt/airflow/logs
+      - ./files:/opt/airflow/files
+      - /var/run/docker.sock:/var/run/docker.sock
+    command:
+      - worker
+    depends_on:
+      - airflow-scheduler
+    restart: always
+
+  # initdb
+  airflow-initdb:
+    image: apache/airflow:1.10.12-python3.8
+    container_name: airflow-initdb
+    hostname: airflow-initdb
+#    build: ./docker
+    env_file:
+      - env
+    volumes:
+      - ./dags:/opt/airflow/dags
+      - ./logs:/opt/airflow/logs
+      - ./files:/opt/airflow/files
+      - /var/run/docker.sock:/var/run/docker.sock
+    networks:
+      - data
+#    entrypoint: /bin/bash
+#    command: -c "airflow initdb"
+    command:
+      - initdb
+#    depends_on:
+#      - redis
+#      - postgres
+
+  # redis
+#  redis:
+#    container_name: redis
+#    image: redis:latest
+#    environment:
+#      REDIS_HOST: redis
+#      REDIS_PORT: 6379
+#    volumes:
+#      - ./db/redis:/data
+#    networks:
+#      - airflow
+#    ports:
+#      - 6379:6379
+##    command:  redis-server --appendonly yes --port 6379
+#    command:  redis-server --appendonly yes
+#    restart: always
+
+  # postgres
+#  postgres:
+#    container_name: postgres
+#    image: postgres:11.5
+#    environment:
+#      POSTGRES_USER: airflow
+#      POSTGRES_DB: airflow
+#      POSTGRES_PASSWORD: airflow
+#      TZ: Asia/Seoul
+#    networks:
+#      - airflow
+#    ports:
+#      - 5432:5432
+#    volumes:
+#      - /var/run/docker.sock:/var/run/docker.sock
+#      - ./db/postgres/data:/var/lib/postgres
+#    command: >
+#      postgres
+#        -c listen_addresses=*
+#        -c logging_collector=on
+#        -c log_destination=stderr
+#        -c max_connections=200
+#    restart: always

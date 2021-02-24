@@ -1,0 +1,74 @@
+version: "3.7"
+networks:
+  data:
+    external:
+      name: waisy
+
+services:
+  spark-master:
+    container_name: spark-master
+    hostname: spark-master
+    image: hanyoon/spark-master:3.0.1
+    restart: always
+    ports:
+      - "9090:8080"
+      - "7077:7077"
+    networks:
+      - data
+    volumes:
+       - ./apps:/opt/spark-apps
+       - ../db/spark:/opt/spark-data
+    environment:
+      - "SPARK_LOCAL_IP=spark-master"
+  spark-worker-1:
+    container_name: spark-worker-1
+    hostname: spark-worker-1
+    image: hanyoon/spark-worker:3.0.1
+    restart: always
+    depends_on:
+      - spark-master
+    ports:
+      - "8081:8081"
+    networks:
+      - data
+    environment:
+      - SPARK_MASTER=spark://spark-master:7077
+      - SPARK_WORKER_CORES=1
+      - SPARK_WORKER_MEMORY=1G
+      - SPARK_DRIVER_MEMORY=128m
+      - SPARK_EXECUTOR_MEMORY=256m
+    volumes:
+       - ./apps:/opt/spark-apps
+       - ../db/spark:/opt/spark-data
+
+  spark-worker-2:
+    container_name: spark-worker-2
+    hostname: spark-worker-2
+    image: hanyoon/spark-worker:3.0.1
+    restart: always
+    depends_on:
+      - spark-master
+    ports:
+      - "8082:8081"
+    networks:
+      - data
+    environment:
+      - SPARK_MASTER=spark://spark-master:7077
+      - SPARK_WORKER_CORES=1
+      - SPARK_WORKER_MEMORY=1G
+      - SPARK_DRIVER_MEMORY=128m
+      - SPARK_EXECUTOR_MEMORY=256m
+    volumes:
+      - ./apps:/opt/spark-apps
+      - ../db/spark:/opt/spark-data
+
+  jupyterlab:
+    image: hanyoon/jupyterlab:3.0.1
+    container_name: jupyterlab
+    restart: always
+    ports:
+      - "8888:8888"
+    networks:
+      - data
+    volumes:
+      - ../db/spark:/opt/spark-data
