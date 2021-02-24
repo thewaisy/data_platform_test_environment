@@ -82,10 +82,10 @@ services:
 #      - --skip-grant-tables
 #    environment:
 #      MYSQL_ALLOW_EMPTY_PASSWORD: "yes"
-#      MYSQL_ROOT_PASSWORD: donghyun
+#      MYSQL_ROOT_PASSWORD: test
 #      MYSQL_DATABASE: waisy
 #      MYSQL_USER: waisy
-#      MYSQL_PASSWORD: donghyun
+#      MYSQL_PASSWORD: test
 #    restart: always
 
   mysql_5:
@@ -107,10 +107,10 @@ services:
       - --skip-grant-tables
     environment:
       MYSQL_ALLOW_EMPTY_PASSWORD: "yes"
-      MYSQL_ROOT_PASSWORD: donghyun
+      MYSQL_ROOT_PASSWORD: test
       MYSQL_DATABASE: waisy
       MYSQL_USER: waisy
-      MYSQL_PASSWORD: donghyun
+      MYSQL_PASSWORD: test
     restart: always
 
   postgres_12:
@@ -126,7 +126,7 @@ services:
       - ./db/postgres_12:/var/lib/postgresql/data
     restart: always
     environment:
-      POSTGRES_PASSWORD: "donghyun"
+      POSTGRES_PASSWORD: "test"
       TZ: Asia/Seoul
 
   es:
