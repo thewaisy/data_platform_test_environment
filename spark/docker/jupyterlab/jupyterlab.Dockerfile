@@ -1,8 +1,8 @@
-FROM hanyoon/spark-base:3.0.1
+FROM hanyoon1108/spark-base:3.0.2
 
 # -- Layer: JupyterLab
 
-ARG spark_version=3.0.1
+ARG spark_version=3.0.2
 ARG jupyterlab_version=2.1.5
 ARG jupyter=8888
 

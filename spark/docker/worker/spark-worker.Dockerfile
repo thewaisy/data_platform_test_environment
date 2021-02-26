@@ -1,4 +1,4 @@
-FROM hanyoon/spark-base:3.0.1
+FROM hanyoon1108/spark-base:3.0.2
 
 COPY start-worker.sh /
 

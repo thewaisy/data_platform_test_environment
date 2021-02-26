@@ -8,7 +8,7 @@ services:
   spark-master:
     container_name: spark-master
     hostname: spark-master
-    image: hanyoon/spark-master:3.0.1
+    image: hanyoon1108/spark-master:3.0.2
     restart: always
     ports:
       - "4040:4040"
@@ -24,7 +24,7 @@ services:
   spark-worker:
     container_name: spark-worker
     hostname: spark-worker
-    image: hanyoon/spark-worker:3.0.1
+    image: hanyoon1108/spark-worker:3.0.2
     restart: always
     depends_on:
       - spark-master
@@ -43,7 +43,7 @@ services:
        - ../db/spark:/opt/spark-data
 
   jupyterlab:
-    image: hanyoon/jupyterlab:3.0.1
+    image: hanyoon1108/jupyterlab:3.0.2
     container_name: jupyterlab
     restart: always
     ports:
